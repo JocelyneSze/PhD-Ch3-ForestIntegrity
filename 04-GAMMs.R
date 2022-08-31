@@ -132,10 +132,10 @@ for(i in 1:3){
   
   # ---- get predictions ----
   cat('Predict for GAMM', '\n')
-  # exclude country and anthrome effects and xy coordinates
-  zero_set <- c("s(Forest2010Area,gadm36)", "s(gadm36)", "s(Type,gadm36)")  #, "s(anthromes2010AD)"
+  # exclude country effects 
+  zero_set <- c("s(Forest2010Area,gadm36)", "s(gadm36)", "s(Type,gadm36)")  
   
-  # include unique country and anthrome levels
+  # include unique country  levels
   newX$gadm36 <- sort(unique(dataset$gadm36))
   # include the key predictor
   newX$Type <- sort(unique(dataset$Type))
