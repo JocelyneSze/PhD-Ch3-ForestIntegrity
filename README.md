@@ -1,2 +1,2 @@
-# PhD-Ch4-Wilderness
-Code for chapter on ecological integrity and wilderness
+# PhD-Forest Integrity
+Code for manuscript submitted to Current Biology, analysis of how forest landscape integrity index (FLII) is distributed across the tropics within protected areas, Indigenous lands, protected-Indigenous areas, and non-protected areas, changes in anthromes from 1950-2010 within these matched areas, and the protective effect of each protection type on FLII based on regression modelling. 
