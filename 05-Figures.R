@@ -173,6 +173,8 @@ fig1 <- plot_grid(map_p1, map_p2, map_p3,
   theme(plot.background = element_rect(fill = "white", colour = NA))
 ggsave('../Output/Figures/StudyArea_FLII_Types_2022-07-20.png', fig1,
        width = 18, height = 18, units ='cm') 
+ggsave('../Writings/CurrBiol/Final Submission/Figures/Figure1.pdf', fig1,
+       width = 5.06, height = 5.74, dpi=300) 
 
 
 #### Fig 2: Naive FLII data ####
@@ -217,80 +219,6 @@ ggplot() +
   ylab("Percentage of area") +
   theme_bw() +
   theme(legend.position='bottom')
-## run some statistical tests to see if differences are significant
-df <- full2 %>% 
-  drop_na() %>% 
-  select(Type, flii) %>% 
-  mutate(Type=as.factor(Type))
-df.aov <- aov(flii ~ Type, data=df)
-summary(df.aov)
-TukeyHSD(df.aov)
-
-dfAfrica <- full2 %>% 
-  filter(Region=="Africa") %>% 
-  filter(!is.na(flii)) %>% 
-  select(Type, flii) %>% 
-  mutate(Type = as.factor(Type))
-afr.aov <- aov(flii ~ Type, data=dfAfrica)
-summary(afr.aov)
-TukeyHSD(afr.aov)
-# Tukey multiple comparisons of means
-# 95% family-wise confidence level
-# 
-# Fit: aov(formula = flii ~ Type, data = dfAfrica)
-# 
-# $Type
-# diff          lwr        upr    p adj
-# 1-0 1.60858650  1.592772182 1.62440082 0.000000
-# 2-0 1.61979476  1.606542419 1.63304710 0.000000
-# 3-0 2.15099491  2.125369828 2.17662000 0.000000
-# 2-1 0.01120826 -0.007682196 0.03009871 0.422841
-# 3-1 0.54240841  0.513462433 0.57135439 0.000000
-# 3-2 0.53120016  0.503570433 0.55882988 0.000000
-
-dfAmericas <- full2 %>% 
-  filter(Region=="Americas") %>% 
-  filter(!is.na(flii)) %>% 
-  select(Type, flii) %>% 
-  mutate(Type=as.factor(Type))
-am.aov <- aov(flii ~ Type, data=dfAmericas)
-summary(am.aov)
-TukeyHSD(am.aov)
-# Tukey multiple comparisons of means
-# 95% family-wise confidence level
-# 
-# Fit: aov(formula = flii ~ Type, data = dfAmericas)
-# 
-# $Type
-# diff        lwr        upr p adj
-# 1-0  1.5622999  1.5565679  1.5680319     0
-# 2-0  0.7429136  0.7362441  0.7495831     0
-# 3-0  1.9020601  1.8962990  1.9078212     0
-# 2-1 -0.8193863 -0.8269507 -0.8118220     0
-# 3-1  0.3397602  0.3329832  0.3465372     0
-# 3-2  1.1591465  1.1515601  1.1667329     0
-
-dfAsia <- full2 %>% 
-  filter(Region=="Asia") %>% 
-  filter(!is.na(flii)) %>% 
-  select(Type, flii) %>% 
-  mutate(Type = as.factor(Type))
-as.aov <- aov(flii ~ Type, data=dfAsia)
-summary(as.aov)
-TukeyHSD(as.aov)
-# Tukey multiple comparisons of means
-# 95% family-wise confidence level
-# 
-# Fit: aov(formula = flii ~ Type, data = dfAsia)
-# 
-# $Type
-# diff        lwr        upr p adj
-# 1-0  1.4701128  1.4522272  1.4879983     0
-# 2-0  0.3716584  0.3644382  0.3788787     0
-# 3-0  2.0770739  2.0640589  2.0900889     0
-# 2-1 -1.0984543 -1.1163368 -1.0805718     0
-# 3-1  0.6069611  0.5860556  0.6278666     0
-# 3-2  1.7054155  1.6924047  1.7184262     0
 
 ## within each region
 # using just mean and SE
@@ -368,6 +296,8 @@ fig2 <- plot_grid(flii_p1, flii_p2, ncol=1, align="v", labels="AUTO",
                   label_size=10) # drop rel_heights
 ggsave("../Output/Figures/FLII_initialOverlay_2022-07-12.png", fig2,
        width=14, height=14, units='cm')
+ggsave('../Writings/CurrBiol/Final Submission/Figures/Figure2.pdf', fig2,
+       width = 4.92, height = 5, dpi=300) 
 
 #### Fig 3: Anthromes ####
 finalDF <- fread("../Output/GAMMedDataStack_quasibinomFLIIwAnthromes_2022-02-24.csv")
@@ -437,7 +367,7 @@ ggplot(finalDF) +
   geom_bar(aes(y=antLevel_2010)) +
   theme_classic()
 
-## stacked bar chart of anthrome levels
+# stacked bar chart of anthrome levels
 ggplot() +
   facet_wrap(~Region) +
   geom_bar(data=y1950, aes(x=Type, fill=category), width=barwidth) +
@@ -462,7 +392,7 @@ ggplot(finalDF) +
   theme_bw() +
   theme(legend.position='bottom')
 
-### better to do in proportion
+### try with proportion
 ##  without distinguishing region 
 ## for 2010
 anth_2010 <- finalDF %>% 
@@ -534,6 +464,8 @@ antProp <- ggplot() +
 
 ggsave('../Output/Figures/Anthromes1950-2010-prop_2022-02-28.png', antProp,
        width = 14, height = 12, units ='cm')
+ggsave('../Writings/CurrBiol/Final Submission/Figures/Figure3.pdf', antProp,
+       width = 5, height = 5, dpi=300) 
 
 #### Fig 4: GAMM output ####
 ## read in prediction results 
@@ -571,4 +503,6 @@ flii_p1 <- ggplot(fliiDF_quasi) +
 
 ggsave('../Output/Figures/FLII_GAMM_multiusePAs_protectionEffect_2022-04-11.png', flii_p1,
        width = 14, height = 12, units ='cm') 
+ggsave('../Writings/CurrBiol/Final Submission/Figures/Figure4.pdf', flii_p1,
+       width = 6, height = 5, dpi=300) 
 
