@@ -51,7 +51,7 @@ freq(newDat$Type_pre2011)
 # [2,]     1     1  579188
 # [3,]     1     2  526503
 # [4,]     1     3  420334
-writeRaster(newDat, '../Data/Analysis/MatchedDataStack_2021-02-02.tif')
+writeRaster(newDat, '../Data/Analysis/MatchedDataStack_2022-02-02.tif')
 
 ## convert to csv
 df <- list()
@@ -72,7 +72,7 @@ summary(full)
 #  Mean   :   9.903   Mean   :  2.0273   Mean   :0.9254   Mean   : 8.3    
 #  3rd Qu.:  82.563   3rd Qu.:  6.8382   3rd Qu.:2.0000   3rd Qu.:10.0    
 #  Max.   : 178.996   Max.   : 28.0382   Max.   :3.0000   Max.   :10.0    
-#  NA's   :657940  
+#                                                         NA's   :657940  
 # anthromes1950AD anthromes2010AD    IFL2013            slope        
 # Min.   :11.00   Min.   :11.00   Min.   :1         Min.   : 0.0000  
 # 1st Qu.:52.00   1st Qu.:43.00   1st Qu.:1         1st Qu.: 0.8389  

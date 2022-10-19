@@ -256,7 +256,7 @@ flii_p1 <- ggplot(fliiTB, aes(x=Type, y=flii)) +
   stat_summary(fun=median, geom="point", shape=20, size=2) +
   ## other specs
   ylab("FLII score") +
-  scale_x_discrete(limits = c("0","1","2", "3"), # this specifies the position of x axis and what the axis label should be
+  scale_x_discrete(limits = c("0","1","2", "3"), 
                    labels=c("0"="None", "1"="PA", "2"="IL", "3"="PIA")) +
   theme_bw() +
   theme(legend.position="none",
@@ -280,7 +280,7 @@ fliiTB2 <- full2 %>%
 flii_p2 <- ggplot() +
   facet_wrap(~Region) +
   geom_col(data=fliiTB2, aes(x=Type, y=FLIIperc, fill=FLII_cat), width=0.6, position=position_stack(reverse=TRUE)) +
-  scale_x_discrete(limits = c("0","1","2", "3"), # this specifies the position of x axis and what the axis label should be
+  scale_x_discrete(limits = c("0","1","2", "3"), 
                    labels=c("0"="None", "1"="PA", "2"="IL", "3"="PIA"),
                    name="Forest protection") +
   scale_fill_manual(values=fliiPalette, name="FLII category") +
@@ -299,7 +299,47 @@ ggsave("../Output/Figures/FLII_initialOverlay_2022-07-12.png", fig2,
 ggsave('../Writings/CurrBiol/Final Submission/Figures/Figure2.pdf', fig2,
        width = 4.92, height = 5, dpi=300) 
 
-#### Fig 3: Anthromes ####
+#### Fig 3: GAMM output ####
+## read in prediction results 
+fliiDF_quasi <- read_csv("../Data/Analysis/GAMM_quasiBinomial_transVars_predResults.csv") %>% 
+  mutate(Region = as.factor(Region), 
+         Type = as.factor(Type),
+         estFLIIori = fit*10,
+         estFLIIlwr = (fit-se.fit)*10,
+         estFLIIupr = (fit+se.fit)*10)
+
+## calc percent difference between each protype and unprotected
+## calculate SE for the % avoided following https://www2.census.gov/programs-surveys/acs/tech_docs/accuracy/percchg.pdf
+# from: https://stats.stackexchange.com/questions/376639/what-is-the-standard-error-of-the-difference-in-means-scaled-as-percent-differen
+fliiDF_percDiff <- read_csv("../Data/Analysis/GAMM_quasiBinomial_transVars_predResults.csv") %>% 
+  group_by(Region) %>% 
+  mutate(percentDiff = round(((fit - first(x=fit))/first(x=fit))*100, digits=2),
+         percentSE = round((abs(fit/first(x=fit)) * sqrt((se.fit^2/fit^2) + (first(x=se.fit)^2/first(x=fit)^2)) * 100), digits=2))
+
+# est effect of protection type on FLII 
+flii_p1 <- ggplot(fliiDF_quasi) +
+  facet_wrap(~Region) +
+  ## GAMM predictions
+  geom_hline(data=fliiDF_quasi[which(fliiDF_quasi$Type==0),], aes(yintercept=estFLIIori), size=0.75, colour='grey') + # removed aes colour=Type
+  geom_rect(data=fliiDF_quasi[which(fliiDF_quasi$Type==0),], aes(ymin=estFLIIlwr, ymax=estFLIIupr), xmin=-Inf, xmax=Inf, alpha=0.3) +
+  geom_segment(data=fliiDF_quasi[which(fliiDF_quasi$Type!=0),], aes(x=as.numeric(Type)-1.2, xend=as.numeric(Type)-0.8, y=estFLIIori, yend=estFLIIori), size=0.75) +
+  geom_segment(data=fliiDF_quasi[which(fliiDF_quasi$Type!=0),], aes(x=as.numeric(Type)-1, xend=as.numeric(Type)-1, y=estFLIIlwr, yend=estFLIIupr), size=0.75) + 
+  ## other specs
+  ylab("Estimated FLII") +
+  # xlab("Forest protection") +
+  scale_x_discrete(limits = c("0","1","2"), 
+                   labels=c("0"="PA", "1"="IL", "2"="PIA")) +
+  theme_bw() +
+  theme(legend.position="none",
+        axis.title.x = element_blank()) 
+
+ggsave('../Output/Figures/FLII_GAMM_multiusePAs_protectionEffect_2022-04-11.png', flii_p1,
+       width = 14, height = 12, units ='cm') 
+ggsave('../Writings/CurrBiol/Final Submission/Figures/Figure3.pdf', flii_p1,
+       width = 6, height = 5, dpi=300) 
+
+
+#### Fig 4: Anthromes ####
 finalDF <- fread("../Output/GAMMedDataStack_quasibinomFLIIwAnthromes_2022-02-24.csv")
 finalDF <- finalDF %>%   
   mutate(Type = as.factor(Type), 
@@ -464,45 +504,6 @@ antProp <- ggplot() +
 
 ggsave('../Output/Figures/Anthromes1950-2010-prop_2022-02-28.png', antProp,
        width = 14, height = 12, units ='cm')
-ggsave('../Writings/CurrBiol/Final Submission/Figures/Figure3.pdf', antProp,
+ggsave('../Writings/CurrBiol/Final Submission/Figures/Figure4.pdf', antProp,
        width = 5, height = 5, dpi=300) 
-
-#### Fig 4: GAMM output ####
-## read in prediction results 
-fliiDF_quasi <- read_csv("../Data/Analysis/GAMM_quasiBinomial_transVars_predResults.csv") %>% 
-  mutate(Region = as.factor(Region), 
-         Type = as.factor(Type),
-         estFLIIori = fit*10,
-         estFLIIlwr = (fit-se.fit)*10,
-         estFLIIupr = (fit+se.fit)*10)
-
-## calc percent difference between each protype and unprotected
-## calculate SE for the % avoided following https://www2.census.gov/programs-surveys/acs/tech_docs/accuracy/percchg.pdf
-# from: https://stats.stackexchange.com/questions/376639/what-is-the-standard-error-of-the-difference-in-means-scaled-as-percent-differen
-fliiDF_percDiff <- read_csv("../Data/Analysis/GAMM_quasiBinomial_transVars_predResults.csv") %>% 
-  group_by(Region) %>% 
-  mutate(percentDiff = round(((fit - first(x=fit))/first(x=fit))*100, digits=2),
-         percentSE = round((abs(fit/first(x=fit)) * sqrt((se.fit^2/fit^2) + (first(x=se.fit)^2/first(x=fit)^2)) * 100), digits=2))
-
-# est effect of protection type on FLII 
-flii_p1 <- ggplot(fliiDF_quasi) +
-  facet_wrap(~Region) +
-  ## GAMM predictions
-  geom_hline(data=fliiDF_quasi[which(fliiDF_quasi$Type==0),], aes(yintercept=estFLIIori), size=0.75, colour='grey') + # removed aes colour=Type
-  geom_rect(data=fliiDF_quasi[which(fliiDF_quasi$Type==0),], aes(ymin=estFLIIlwr, ymax=estFLIIupr), xmin=-Inf, xmax=Inf, alpha=0.3) +
-  geom_segment(data=fliiDF_quasi[which(fliiDF_quasi$Type!=0),], aes(x=as.numeric(Type)-1.2, xend=as.numeric(Type)-0.8, y=estFLIIori, yend=estFLIIori), size=0.75) +
-  geom_segment(data=fliiDF_quasi[which(fliiDF_quasi$Type!=0),], aes(x=as.numeric(Type)-1, xend=as.numeric(Type)-1, y=estFLIIlwr, yend=estFLIIupr), size=0.75) + 
-  ## other specs
-  ylab("Estimated FLII") +
-  # xlab("Forest protection") +
-  scale_x_discrete(limits = c("0","1","2"), # this specifies the position of x axis and what the axis label should be
-                   labels=c("0"="PA", "1"="IL", "2"="PIA")) +
-  theme_bw() +
-  theme(legend.position="none",
-        axis.title.x = element_blank()) 
-
-ggsave('../Output/Figures/FLII_GAMM_multiusePAs_protectionEffect_2022-04-11.png', flii_p1,
-       width = 14, height = 12, units ='cm') 
-ggsave('../Writings/CurrBiol/Final Submission/Figures/Figure4.pdf', flii_p1,
-       width = 6, height = 5, dpi=300) 
 

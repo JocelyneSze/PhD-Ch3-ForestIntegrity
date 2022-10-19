@@ -39,10 +39,10 @@ writeRaster(rd3, '../Data/Raw/SEDAC_groads-v1-global-gdb/DisttoRoads_TropicalFor
 
 # ---- baseline forest area ----
 # using Global Forest Watch Tree Cover 2010 data 
-fa2000 <- raster('../Data/Raw/GFW/Forest2000Area_Thresh25.tif')
-fa20002 <- resample(fa2000, tmp, method='bilinear')
-fa20002[fa20002<0] <- 0
-writeRaster(fa20002, '../Data/Raw/GFW/Forest2000Area_Thresh25_TropForResampled.tif')
+fa2010 <- raster('../Data/Raw/GFW/Forest2010Area_Thresh25.tif')
+fa20102 <- resample(fa2010, tmp, method='bilinear')
+fa20102[fa20102<0] <- 0
+writeRaster(fa20102, '../Data/Raw/GFW/Forest2010Area_Thresh25_TropForResampled.tif')
 
 
 # ---- country polygons ----
@@ -183,21 +183,18 @@ pacman::p_load(terra, data.table, tidyverse)
   
 # ---- stack and convert to dataframe ----    
   ## standard variables
-  vars <- c('../Data/Raw/GFW/DefRate10to18_Thresh25_TropForResampled.tif',
-            '../Data/Raw/GFW/ForestedPixels2010_Thresh25_TropForResampled.tif',
-            '../Data/Raw/GFW/ForestedPixels2018_Thresh25_TropForResampled.tif',
-            '../Data/Raw/Amatulli2018_topo/slope_TropForResampled.tif',
+  vars <- c('../Data/Raw/Amatulli2018_topo/slope_TropForResampled.tif',
             '../Data/Raw/Amatulli2018_topo/elevation_TropForResampled.tif',
             '../Data/Raw/Lloyd2017_worldPop/ppp_2010_TropForResampled.tif',
             '../Data/Raw/Nelson2019_travelTime/travelTimeto5kcity_TropForResampled.tif',
             '../Data/Raw/SEDAC_groads-v1-global-gdb/DisttoRoads_TropicalForests_epsg4326_resampled.tif',
-            '../Data/Raw/GFW/Forest2000Area_Thresh25_TropForResampled.tif',
+            '../Data/Raw/GFW/Forest2010Area_Thresh25_TropForResampled.tif',
             '../Data/Country Boundaries/gadm36_Countries_complete_resampled.tif')
-  # inc the changing variable
+  ## inc the changing variable
   vars <- c(vars, '../Data/Raw/Type/ProtectionTypes_pre2011PAs.tif')
   # only multiuse PAs: '../Data/Raw/Type/Type_pre2011MultiUsePAsOnly.tif' 
   
-  # mask layer
+  ## mask layer
   newmask <- rast('../Data/Raw/WDPA/WDPApost2011_boundary_treePlantation_mask.tif')
   
   # get rasters

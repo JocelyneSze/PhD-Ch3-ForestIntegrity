@@ -1,6 +1,7 @@
 ## Match for protection types for each region
-## Done on HPC. 
+## Done on The University of Sheffield's HPC ShARC. 
 ## Script calls out a sample of the data to run matching for
+## This was repeated 5 times to obtain 5 samples. 
 
 shhh <- suppressPackageStartupMessages
 shhh(library('MatchIt')) # to do actual matching
